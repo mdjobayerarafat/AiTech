@@ -13,12 +13,14 @@ from django.conf import settings
 import os  # Add this import
 
 # Create your views here.
+# type: ignore
 class ChatbotView(APIView):
+
     def post(self, request):
         user_message = request.data.get('message')
         
         # Initialize Ollama with Qwen2 model
-        llm = Ollama(model="qwen2")
+        llm = Ollama(model="qwen2:1.5b")
         
         # Create a prompt template
         template = """

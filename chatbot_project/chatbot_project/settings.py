@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-70xf$_!^%d^n1s&m8nuivg^aub@3i94&gog7-9dbm$ayp)a-gi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -52,7 +52,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
-CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  # or the port number of your frontend app
+]
+
 
 ROOT_URLCONF = 'chatbot_project.urls'
 
