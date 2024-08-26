@@ -3,7 +3,13 @@ from rest_framework.response import Response
 from .models import ChatMessage
 from .serializers import ChatMessageSerializer
 from langchain import LLMChain, PromptTemplate
-from langchain.llms import ollama
+from langchain.llms import Ollama  # Note: 'Ollama' should be capitalized
+import csv
+import requests
+from bs4 import BeautifulSoup
+import PyPDF2
+from django.conf import settings
+import os  # Add this import
 
 # Create your views here.
 class ChatbotView(APIView):
@@ -27,7 +33,7 @@ class ChatbotView(APIView):
         # Create an LLMChain
         chain = LLMChain(llm=llm, prompt=prompt)
         
-        # Get context from various sources (implement this function)
+        # Get context from various sources
         context = self.get_context(user_message)
         
         # Generate response
@@ -40,6 +46,46 @@ class ChatbotView(APIView):
         return Response(serializer.data)
     
     def get_context(self, user_message):
-        # Implement logic to retrieve relevant information from text, website, PDF, and CSV
-        # This is a placeholder function
-        return "Relevant context from various sources"
+        context = ""
+        
+        # Get the base directory for data files
+        data_dir = os.path.join(settings.BASE_DIR, 'data')
+        
+        # Text file
+        try:
+            with open(os.path.join(data_dir, 'data.txt'), 'r') as file:
+                text_data = file.read()
+                context += f"Text data: {text_data}\n\n"
+        except FileNotFoundError:
+            context += "Text file not found.\n\n"
+        
+        # Website
+        try:
+            response = requests.get('https://example.com')
+            soup = BeautifulSoup(response.text, 'html.parser')
+            website_data = soup.get_text()
+            context += f"Website data: {website_data}\n\n"
+        except requests.RequestException:
+            context += "Failed to fetch website data.\n\n"
+        
+        # PDF
+        try:
+            with open(os.path.join(data_dir, 'document.pdf'), 'rb') as file:
+                reader = PyPDF2.PdfReader(file)
+                pdf_text = ""
+                for page in reader.pages:
+                    pdf_text += page.extract_text()
+                context += f"PDF data: {pdf_text}\n\n"
+        except FileNotFoundError:
+            context += "PDF file not found.\n\n"
+        
+        # CSV
+        try:
+            with open(os.path.join(data_dir, 'data.csv'), 'r') as file:
+                csv_reader = csv.reader(file)
+                csv_data = [row for row in csv_reader]
+                context += f"CSV data: {csv_data}\n\n"
+        except FileNotFoundError:
+            context += "CSV file not found.\n\n"
+        
+        return context
