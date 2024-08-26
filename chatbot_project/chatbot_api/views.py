@@ -2,8 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import ChatMessage
 from .serializers import ChatMessageSerializer
-from langchain import LLMChain, PromptTemplate
-from langchain.llms import Ollama  # Note: 'Ollama' should be capitalized
+from langchain_core.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain_community.llms import Ollama # Note: 'Ollama' should be capitalized
 import csv
 import requests
 from bs4 import BeautifulSoup
